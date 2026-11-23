@@ -201,7 +201,7 @@ Before deploying, add:
 |---|---|
 | `VITE_API_BASE_URL` | `https://YOUR-RENDER-SERVICE.onrender.com/api` |
 
-No trailing slash.
+No trailing slash. Use the **Render** URL, not the Vercel URL. The `/api` suffix is required; the client now also appends it automatically if you forget it.
 
 This is baked into the build by Vite. If you change it later, you must redeploy the frontend.
 
@@ -283,6 +283,7 @@ Test with one student account and one counselor account:
 | Login returns 401 or cookies are not saved | Confirm `VITE_API_BASE_URL` ends with `/api`, both sites are HTTPS, and the latest backend with `SameSite=None` is deployed. |
 | `/admin` gives 404 after refresh | Confirm `front-end/vercel.json` was committed and the frontend rebuilt. |
 | Frontend is a plain white page | Root Directory must be `front-end`. Confirm `/assets/*.js` returns JavaScript, not `text/html`; recommit the updated `vercel.json` and redeploy. |
+| UI shows for 1 second, then disappears | `VITE_API_BASE_URL` is wrong. It must be the Render URL, not the Vercel URL, and must resolve to `/api`. Check the Console for `BAD_API_RESPONSE`, fix the variable, then redeploy Vercel. |
 | Render first request is very slow | Free plan cold start. Upgrade to Starter or keep polling active. |
 | Database errors | Check the Neon `DATABASE_URL`, use the pooled host, and run `npm run db:migrate`. |
 | Demo accounts missing | Set `SEED_DEMO_DATA=true` once on a fresh Neon database, then set it back to `false`. |

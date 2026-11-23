@@ -70,7 +70,7 @@ export default function Home() {
 
   useEffect(() => {
     void publicApi.counselors()
-      .then((result) => setTeam(result.counselors))
+      .then((result) => setTeam(Array.isArray(result.counselors) ? result.counselors : []))
       .catch(() => setTeam([]))
   }, [])
 

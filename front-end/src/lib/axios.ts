@@ -5,8 +5,9 @@ import axios, {
   type InternalAxiosRequestConfig,
 } from 'axios'
 
-const configuredBaseURL = import.meta.env.VITE_API_BASE_URL as string | undefined
-const baseURL = (configuredBaseURL || '/api').replace(/\/$/, '')
+const configuredBaseURL = (import.meta.env.VITE_API_BASE_URL as string | undefined)?.trim()
+const normalizedBaseURL = (configuredBaseURL || '/api').replace(/\/+$/, '')
+const baseURL = normalizedBaseURL.endsWith('/api') ? normalizedBaseURL : `${normalizedBaseURL}/api`
 
 type ApiEnvelope<T> =
   | { success: true; data: T }
@@ -179,16 +180,22 @@ function refreshSession() {
 http.interceptors.response.use(
   (response) => {
     const payload = response.data as ApiEnvelope<unknown>
-    if (payload && typeof payload === 'object' && 'success' in payload) {
-      if (!payload.success) {
-        const detail = getErrorDetail(payload)
-        throw new ApiRequestError(
-          detail?.message || 'The request could not be completed.',
-          detail?.code,
-        )
-      }
-      response.data = payload.data as never
+    if (!payload || typeof payload !== 'object' || !('success' in payload)) {
+      throw new ApiRequestError(
+        'The API returned an unexpected response. Check VITE_API_BASE_URL.',
+        'BAD_API_RESPONSE',
+      )
     }
+
+    if (!payload.success) {
+      const detail = getErrorDetail(payload)
+      throw new ApiRequestError(
+        detail?.message || 'The request could not be completed.',
+        detail?.code,
+      )
+    }
+
+    response.data = payload.data as never
 
     if (isAuthEndpoint(response.config.url)) clearCsrfToken()
     return response
