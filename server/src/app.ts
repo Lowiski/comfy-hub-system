@@ -16,8 +16,9 @@ const distDir = fileURLToPath(new URL('../../front-end/dist', import.meta.url))
 
 const localOrigin = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/
 const privateLanOrigin = /^https?:\/\/(?:10\.\d{1,3}\.\d{1,3}\.\d{1,3}|127\.\d{1,3}\.\d{1,3}\.\d{1,3}|169\.254\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3})(?::\d+)?$/
+const normalizeOrigin = (origin: string) => origin.trim().replace(/\/+$/, '')
 const allowedOrigins = env.CLIENT_ORIGIN
-  ? env.CLIENT_ORIGIN.split(',').map((origin) => origin.trim()).filter(Boolean)
+  ? env.CLIENT_ORIGIN.split(',').map(normalizeOrigin).filter(Boolean)
   : null
 
 app.disable('x-powered-by')
@@ -34,7 +35,7 @@ app.use(helmet({
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin) return callback(null, true)
-    if (allowedOrigins?.includes(origin)) return callback(null, origin)
+    if (allowedOrigins?.includes(normalizeOrigin(origin))) return callback(null, origin)
     // Local/tunnel origins are only accepted while developing; production must set CLIENT_ORIGIN.
     if (env.NODE_ENV !== 'production' && (localOrigin.test(origin) || privateLanOrigin.test(origin))) {
       return callback(null, origin)

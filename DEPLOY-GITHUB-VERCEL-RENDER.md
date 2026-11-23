@@ -279,7 +279,7 @@ Test with one student account and one counselor account:
 
 | Problem | Fix |
 |---|---|
-| CORS error in console | `CLIENT_ORIGIN` must exactly match the Vercel origin. Redeploy Render. |
+| CORS error in console | `CLIENT_ORIGIN` must match the Vercel origin. The backend now ignores trailing slashes, but `https://app.vercel.app` is preferred over `https://app.vercel.app/`. Redeploy Render after changing it. |
 | Login returns 401 or cookies are not saved | Confirm `VITE_API_BASE_URL` ends with `/api`, both sites are HTTPS, and the latest backend with `SameSite=None` is deployed. |
 | `/admin` gives 404 after refresh | Confirm `front-end/vercel.json` was committed and the frontend rebuilt. |
 | Frontend is a plain white page | Root Directory must be `front-end`. Confirm `/assets/*.js` returns JavaScript, not `text/html`; recommit the updated `vercel.json` and redeploy. |
