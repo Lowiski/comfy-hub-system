@@ -191,7 +191,7 @@ https://YOUR-RENDER-SERVICE.onrender.com
 | Output Directory | `dist` |
 | Install Command | `npm install` |
 
-A `front-end/vercel.json` file is already included so direct links like `/admin`, `/login`, and `/counselor` reload correctly.
+A `front-end/vercel.json` file is already included so direct links like `/admin`, `/login`, and `/counselor` reload correctly. It serves real files first, then falls back to `index.html`, so `/assets/*.js` is never replaced by the HTML shell.
 
 ### 4.2 Add the frontend environment variable
 
@@ -282,6 +282,7 @@ Test with one student account and one counselor account:
 | CORS error in console | `CLIENT_ORIGIN` must exactly match the Vercel origin. Redeploy Render. |
 | Login returns 401 or cookies are not saved | Confirm `VITE_API_BASE_URL` ends with `/api`, both sites are HTTPS, and the latest backend with `SameSite=None` is deployed. |
 | `/admin` gives 404 after refresh | Confirm `front-end/vercel.json` was committed and the frontend rebuilt. |
+| Frontend is a plain white page | Root Directory must be `front-end`. Confirm `/assets/*.js` returns JavaScript, not `text/html`; recommit the updated `vercel.json` and redeploy. |
 | Render first request is very slow | Free plan cold start. Upgrade to Starter or keep polling active. |
 | Database errors | Check the Neon `DATABASE_URL`, use the pooled host, and run `npm run db:migrate`. |
 | Demo accounts missing | Set `SEED_DEMO_DATA=true` once on a fresh Neon database, then set it back to `false`. |
